@@ -1,12 +1,14 @@
-from converters.html_converter import HTMLConverter
-from converters.txt_converter import  TXTConverter
-
 import glob
 import os
 import re
 import logging
 import datetime
 
+from importlib import import_module
+
+
+class UnsupportedFormat(Exception):
+    pass
 
 
 class Parser(object):
@@ -17,11 +19,6 @@ class Parser(object):
     ]
 
     Converter = None
-
-    formats = {
-        'html': HTMLConverter,
-        'txt': TXTConverter
-    }
 
     def __init__(self, source, output_format=None, modes=None):
         self.source = source
@@ -46,9 +43,15 @@ class Parser(object):
             "messages": {x: {} for x in self.modes}
         }
 
-        self.Converter = self.formats.get(output_format)
-        self.output_format = output_format
-        if not self.Converter:
+        try:
+            self.output_format = output_format
+            module = import_module('app.converters.{format}_converter'.format(format=output_format))
+            self.Converter = module.Converter
+
+            if not self.Converter:
+                raise UnsupportedFormat()
+
+        except:
             raise Exception("Unavailable format specified")
 
     def parse(self):

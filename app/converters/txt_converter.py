@@ -3,7 +3,7 @@ import os
 
 FILE_PATH = os.path.abspath(os.path.dirname(__file__))
 
-class TXTConverter(BaseConverter):
+class Converter(BaseConverter):
 
     env = None
     template = None
