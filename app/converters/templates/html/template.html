@@ -8,10 +8,22 @@
         {% include 'css/main.css' %}
     </style>
 </head>
-<header>ERP Log Analyser
-    Generated at {{parser.create_date.strftime('%Y-%m-%d')}}</header>
+<header>
+    ERP Log Analyser <br/>
+    Generated at {{parser.create_date.strftime('%Y-%m-%d')}}
+</header>
 <body>
-    <h1>Files</h1>
+
+    <a href="#files">Files</a>
+    {% for mode in parser.modes %}
+    {% set info = parser.data['messages'][mode] -%}
+    {% if info %}
+    <a href="#{{mode}}">{{ mode.upper() }}</a>
+    {% endif %}
+    {% endfor %}
+
+
+    <h1 id="files">Files</h1>
     <div class="container files">
         <ul class="list">
             {% for file, info in parser.data.get('files', {}).iteritems() %}
@@ -24,19 +36,21 @@
     {% set info = parser.data['messages'][mode] -%}
     {% if info %}
 
-    <h1 class="{{mode.lower()}}">{{mode}}</h1>
+    <h1 id="{{mode}}" class="{{mode}}">{{mode.upper()}}</h1>
     {% for group, messages in info.iteritems() %}
 
-        <div class="container {{mode.lower()}}">
+        <div class="container {{mode}}">
             <label>{{group}}</label>
             {% for message, loggers in messages.iteritems() %}
-                <div class="group">
-                    <pre><code>{{ message }}</code></pre>
+                <div class="group separator">
                     <ul class="list">
                         {% for logger, dates in loggers.iteritems() %}
-                        <li>{{ logger }}: <span>{{ dates|count }} time{% if dates|count > 1 %}s{% endif %}</span></li>
+                        <li><span class="fl">{{ logger }}: </span><span cass="fl remark">{{ dates|count }} time{% if dates|count > 1 %}s{% endif %}</span><span class="fr remark">{{dates|last_date|format_datetime}}</span><span class="fr">Last: </span></li>
                         {% endfor %}
                     </ul>
+                    {% if message %}
+                    <pre><code>{{ message }}</code></pre>
+                    {% endif %}
                 </div>
             {% endfor %}
         </div>

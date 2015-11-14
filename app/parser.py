@@ -2,7 +2,7 @@ import glob
 import os
 import re
 import logging
-import datetime
+from datetime import datetime
 
 from importlib import import_module
 
@@ -14,8 +14,8 @@ class UnsupportedFormat(Exception):
 class Parser(object):
 
     default_modes = [
-        "WARNING",
-        "ERROR"
+        "warning",
+        "error"
     ]
 
     Converter = None
@@ -27,15 +27,16 @@ class Parser(object):
         if output_format is None:
             output_format = 'html'
 
-        self.create_date = datetime.datetime.now()
+        self.create_date = datetime.now()
 
         if modes:
             if isinstance(modes, (str, unicode)):
-                modes = [x.strip().upper() for x in modes.split(",") if x.strip()]
+                modes = [x.strip().lower() for x in re.split('[\W]+', modes) if x.strip()]
+
         if not modes:
             modes = self.default_modes
-        if 'ERROR' in modes:
-            modes.insert(0, modes.pop(modes.index('ERROR')))
+        if 'error' in modes:
+            modes.insert(0, modes.pop(modes.index('error')))
 
         self.modes = modes
         self.data = {
@@ -102,6 +103,10 @@ class Parser(object):
                 if parts:
                     self.add_line(c_line)
                     c_line = {x:parts.group(x) for x in groups}
+                    if c_line['mode']:
+                        c_line['mode'] = c_line['mode'].lower()
+                    if c_line['date']:
+                        c_line['date'] = datetime.strptime(c_line['date'], '%Y-%m-%d %H:%M:%S,%f')
 
                 else:
                     c_line['message'] = "".join([c_line.get('message') or '', line or ''])
@@ -125,6 +130,7 @@ class Parser(object):
                 if not logger:
                     message[line_obj['logger']] = []
                     logger = message[line_obj['logger']]
+
                 logger.append(line_obj['date'])
 
     def format(self):

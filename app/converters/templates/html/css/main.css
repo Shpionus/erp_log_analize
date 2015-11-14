@@ -1,7 +1,6 @@
 header {
     font-size: 30px;
     padding: 20px 30px;
-    white-space: pre-line;
     color: #555;
     background: #ddd;
     font-weight: bold;
@@ -13,6 +12,14 @@ h1 {
     color: #ED591A;
     margin: 30px 0px 10px 30px;
     padding: 10px 0;
+}
+
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
 }
 
 div.container {
@@ -29,7 +36,8 @@ div.container {
 }
 
 .container .group {
-    margin: 10px 0 5px 0;
+    margin: 5px 0 5px 0;
+    padding: 5px 0;
 }
 
 .container label {
@@ -45,18 +53,21 @@ div.container {
 }
 
 .container .list {
-    margin-bottom: 5px;
     padding: 0 5px;
     color: #2B2B2B;
     font-weight: normal;
 }
 
 .container .list span {
+    padding: 0 2px;
+}
+
+span.remark {
     color: #616161;
 }
 
 .container .separator {
-    border-bottom: 1px solid rgba(0, 0, 0, .08);
+    border-top: 1px solid rgba(0, 0, 0, .08);
 }
 
 code {

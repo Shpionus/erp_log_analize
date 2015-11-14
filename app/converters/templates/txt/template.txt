@@ -23,7 +23,7 @@
 #
 ##############################################################################
 {% for mode in parser.modes %} {% set info = parser.data['messages'][mode] -%}{% if info %}
-********** {{mode}} **********
+********** {{mode.upper()}} **********
 {% for group, messages in info.iteritems() %}
 !!! {{group}}
 
