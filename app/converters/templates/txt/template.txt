@@ -1,0 +1,38 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    Open ERP Log Analyser
+#    Generated at : {{parser.create_date.strftime('%Y-%m-%d')}}
+#
+##############################################################################
+
+
+##############################################################################
+#
+#    List Of Files
+#
+##############################################################################
+
+{% for file, info in parser.data.get('files', {}).iteritems() %}
+{{ file }}  -- {{info['count_of_lines']}} line(s){% endfor %}
+
+
+##############################################################################
+#
+#    Messages
+#
+##############################################################################
+{% for mode in parser.modes %} {% set info = parser.data['messages'][mode] -%}{% if info %}
+********** {{mode}} **********
+{% for group, messages in info.iteritems() %}
+!!! {{group}}
+
+{% for message, loggers in messages.iteritems() %}<<<<<<<<<<
+{{ message }}
+>>>>>>>>>>{% for logger, dates in loggers.iteritems() %}
+{{ logger }}: {{ dates|count }} times{% endfor %}
+
+{% endfor %}
+
+{% endfor %}
+{% endif %}{% endfor %}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Log analyser</title>
+
+    <style type="text/css">
+        {% include 'css/reset.css' %}
+        {% include 'css/main.css' %}
+    </style>
+</head>
+<header>ERP Log Analyser
+    Generated at {{parser.create_date.strftime('%Y-%m-%d')}}</header>
+<body>
+    <h1>Files</h1>
+    <div class="container files">
+        <ul class="list">
+            {% for file, info in parser.data.get('files', {}).iteritems() %}
+            <li>{{ file }}: <span>{{info['count_of_lines']}} line{% if info['count_of_lines'] > 1 %}s{% endif %}</span></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    {% for mode in parser.modes %}
+    {% set info = parser.data['messages'][mode] -%}
+    {% if info %}
+
+    <h1 class="{{mode.lower()}}">{{mode}}</h1>
+    {% for group, messages in info.iteritems() %}
+
+        <div class="container {{mode.lower()}}">
+            <label>{{group}}</label>
+            {% for message, loggers in messages.iteritems() %}
+                <div class="group">
+                    <pre><code>{{ message }}</code></pre>
+                    <ul class="list">
+                        {% for logger, dates in loggers.iteritems() %}
+                        <li>{{ logger }}: <span>{{ dates|count }} time{% if dates|count > 1 %}s{% endif %}</span></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+    {% endif %}
+
+
+    {% endfor %}
+
+</body>
+</html>
