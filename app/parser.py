@@ -80,11 +80,11 @@ class Parser(object):
         self.data['files'][path] = {}
 
         pattern = re.compile(
-            r"^(?P<date>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2},\d{3})\s+(?P<code>\d+)\s+(?P<mode>\w+)\s+(?P<source>[\w\?]+)\s+(?P<logger>[^:]+):\s+(?P<group>[^:]+)([:]\s+(?P<message>[^$]+))?$",
+            r"^(?P<str_date>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2},\d{3})\s+(?P<code>\d+)\s+(?P<mode>\w+)\s+(?P<source>[\w\?]+)\s+(?P<logger>[^:]+):\s+(?P<group>[^:]+)([:]\s+(?P<message>.*))?$",
             flags=re.I
         )
         groups = [
-            'date',
+            'str_date',
             'code',
             'mode',
             'source',
@@ -101,12 +101,19 @@ class Parser(object):
                 count_of_lines += 1
                 parts = re.match(pattern, line)
                 if parts:
-                    self.add_line(c_line)
-                    c_line = {x:parts.group(x) for x in groups}
-                    if c_line['mode']:
-                        c_line['mode'] = c_line['mode'].lower()
-                    if c_line['date']:
-                        c_line['date'] = datetime.strptime(c_line['date'], '%Y-%m-%d %H:%M:%S,%f')
+
+                     if (c_line.get('mode') == parts.group('mode').lower()
+                            and c_line.get('str_date') == parts.group('str_date')
+                            and c_line.get('code') == parts.group('code')
+                     ):
+                        c_line['message'] = "".join([c_line.get('message') or '', line or ''])
+                     else:
+                        self.add_line(c_line)
+                        c_line = {x:parts.group(x) for x in groups}
+                        if c_line['mode']:
+                            c_line['mode'] = c_line['mode'].lower()
+                        if c_line['str_date']:
+                            c_line['date'] = datetime.strptime(c_line['str_date'], '%Y-%m-%d %H:%M:%S,%f')
 
                 else:
                     c_line['message'] = "".join([c_line.get('message') or '', line or ''])
