@@ -80,7 +80,7 @@ class Parser(object):
         self.data['files'][path] = {}
 
         pattern = re.compile(
-            r"^(?P<str_date>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2},\d{3})\s+(?P<code>\d+)\s+(?P<mode>\w+)\s+(?P<source>[\w\?]+)\s+(?P<logger>[^:]+):\s+(?P<group>[^:]+)([:]\s+(?P<message>.*))?$",
+            r"^(?P<str_date>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2},\d{3})\s+(?P<code>\d+)\s+(?P<mode>\w+)\s+(?P<source>[\w\?]+)\s+(?P<logger>[^:]+):\s+(?P<group>.*)$",
             flags=re.I
         )
         groups = [
@@ -90,7 +90,6 @@ class Parser(object):
             'source',
             'group',
             'logger',
-            'message'
         ]
 
         count_of_lines = 0
@@ -102,18 +101,12 @@ class Parser(object):
                 parts = re.match(pattern, line)
                 if parts:
 
-                     if (c_line.get('mode') == parts.group('mode').lower()
-                            and c_line.get('str_date') == parts.group('str_date')
-                            and c_line.get('code') == parts.group('code')
-                     ):
-                        c_line['message'] = "".join([c_line.get('message') or '', line or ''])
-                     else:
-                        self.add_line(c_line)
-                        c_line = {x:parts.group(x) for x in groups}
-                        if c_line['mode']:
-                            c_line['mode'] = c_line['mode'].lower()
-                        if c_line['str_date']:
-                            c_line['date'] = datetime.strptime(c_line['str_date'], '%Y-%m-%d %H:%M:%S,%f')
+                    self.add_line(c_line)
+                    c_line = {x: parts.group(x) for x in groups}
+                    if c_line['mode']:
+                        c_line['mode'] = c_line['mode'].lower()
+                    if c_line['str_date']:
+                        c_line['date'] = datetime.strptime(c_line['str_date'], '%Y-%m-%d %H:%M:%S,%f')
 
                 else:
                     c_line['message'] = "".join([c_line.get('message') or '', line or ''])
@@ -122,6 +115,8 @@ class Parser(object):
 
     def add_line(self, line_obj):
         if line_obj:
+            if not line_obj.get("message"):
+                line_obj["message"] = ""
             if line_obj.get('mode', None) in self.modes:
                 mode = self.data['messages'][line_obj['mode']]
                 group = mode.get(line_obj['group'])
