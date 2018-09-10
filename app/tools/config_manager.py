@@ -52,7 +52,7 @@ class ConfigManager(object):
                 self.options[option.dest] = option.default
 
         logging.basicConfig(
-            format = u'%(asctime)s %(levelname)s ? %(filename)s #%(lineno)d - -  %(message)s',
+            format=u'%(asctime)s %(levelname)s ? %(filename)s #%(lineno)d - -  %(message)s',
             filename=os.path.join(BASE_DIR, "logs", "analyse.log"),
             level=logging.DEBUG
         )
@@ -74,13 +74,14 @@ class ConfigManager(object):
         return self.options.get(key, default)
 
     def get_misc(self, sect, key, default=None):
-        return self.misc.get(sect,{}).get(key, default)
+        return self.misc.get(sect, {}).get(key, default)
 
     def __setitem__(self, key, value):
         self.options[key] = value
 
     def __getitem__(self, key):
         return self.options[key]
+
 
 config = ConfigManager()
 config.parse_config()

@@ -5,6 +5,7 @@ from converter import BaseConverter
 
 FILE_PATH = os.path.abspath(os.path.dirname(__file__))
 
+
 class Converter(BaseConverter):
 
     env = None
@@ -17,7 +18,5 @@ class Converter(BaseConverter):
         self.env.filters.update(jinia_filters)
         self.template = self.env.get_template('template.html')
 
-
     def format(self):
         return self.template.render(parser=self.parser)
-

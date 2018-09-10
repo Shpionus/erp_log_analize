@@ -37,21 +37,24 @@
     {% if info %}
 
     <h1 id="{{mode}}" class="{{mode}}">{{mode.upper()}}</h1>
-    {% for group, messages in info.iteritems() %}
+    {% for base_group, messages in info.iteritems() %}
 
         <div class="container {{mode}}">
-            <label>{{group}}</label>
+            <label>{{base_group}}</label>
             {% for message, loggers in messages.iteritems() %}
-                <div class="group separator">
-                    <ul class="list">
-                        {% for logger, dates in loggers.iteritems() %}
-                        <li><span class="fl">{{ logger }}: </span><span cass="fl remark">{{ dates|count }} time{% if dates|count > 1 %}s{% endif %}</span><span class="fr remark">{{dates|last_date|format_datetime}}</span><span class="fr">Last: </span></li>
-                        {% endfor %}
-                    </ul>
-                    {% if message %}
-                    <pre><code>{{ message }}</code></pre>
-                    {% endif %}
-                </div>
+                {% for logger, groups in loggers.iteritems() %}
+                    <label>{{ logger }}</label>
+                    <div class="group separator">
+                        <ul class="list">
+                            {% for group, dates in groups.iteritems() %}
+                                <li><span class="fl">{{ group }}: </span><span cass="fl remark">{{ dates|count }} time{% if dates|count > 1 %}s{% endif %}</span><span class="fr remark">{{dates|last_date|format_datetime}}</span><span class="fr">Last: </span></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+                {% if message %}
+                <pre><code>{{ message }}</code></pre>
+                {% endif %}
             {% endfor %}
         </div>
     {% endfor %}

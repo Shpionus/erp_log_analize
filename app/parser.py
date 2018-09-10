@@ -11,6 +11,22 @@ class UnsupportedFormat(Exception):
     pass
 
 
+class Normalizer(object):
+
+    group_patterns = [
+        (re.compile(r'\(\s*\d*\s*\)'), '(xxx)'),
+        (re.compile(r'=\d+(\.\d+)?'), '=xxx'),
+        (re.compile(r'\b[a-z0-9\.\+_-]+@[a-z0-9\._-]+\.[a-z]*\b\s*', re.I), 'xxx@xxx.xxx '),
+        (re.compile(r'\[\d{2}/[a-z]+/\d{4} \d{2}:\d{2}:\d{2}\]', re.I), '[XX/XX/XXXX XX:XX:XX] '),
+    ]
+
+    def group(self, group):
+        if group:
+            for regexp, val in self.group_patterns:
+                group = regexp.sub(val, group)
+        return group
+
+
 class Parser(object):
 
     default_modes = [
@@ -23,6 +39,7 @@ class Parser(object):
     def __init__(self, source, output_format=None, modes=None):
         self.source = source
         self.source_files = []
+        self.nm = Normalizer()
 
         if output_format is None:
             output_format = 'html'
@@ -117,23 +134,27 @@ class Parser(object):
         if line_obj:
             if not line_obj.get("message"):
                 line_obj["message"] = ""
+            line_obj["base_group"] = self.nm.group(line_obj["group"])
             if line_obj.get('mode', None) in self.modes:
                 mode = self.data['messages'][line_obj['mode']]
-                group = mode.get(line_obj['group'])
-                if not group:
-                    mode[line_obj['group']] = {}
-                    group = mode[line_obj['group']]
-                message = group.get(line_obj['message'])
-                if not message:
-                    group[line_obj['message']] = {}
-                    message = group[line_obj['message']]
+
+                base_group = mode.get(line_obj['base_group'])
+                if not base_group:
+                    base_group = mode[line_obj['base_group']] = {}
+
+                message = base_group.get(line_obj['message'] or '')
+                if message is None:
+                    message = base_group[line_obj['message']] = {}
 
                 logger = message.get(line_obj['logger'])
-                if not logger:
-                    message[line_obj['logger']] = []
-                    logger = message[line_obj['logger']]
+                if logger is None:
+                    logger = message[line_obj['logger']] = {}
 
-                logger.append(line_obj['date'])
+                group = logger.get(line_obj['group'])
+                if group is None:
+                    group = logger[line_obj['group']] = []
+
+                group.append(line_obj['date'])
 
     def format(self):
         logging.info("Format to {format}".format(format=self.output_format))

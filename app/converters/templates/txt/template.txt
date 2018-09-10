@@ -24,14 +24,15 @@
 ##############################################################################
 {% for mode in parser.modes %} {% set info = parser.data['messages'][mode] -%}{% if info %}
 ********** {{mode.upper()}} **********
-{% for group, messages in info.iteritems() %}
-!!! {{group}}
-
-{% for message, loggers in messages.iteritems() %}<<<<<<<<<<
+{% for base_group, messages in info.iteritems() %}
+!!! {{base_group}} {% for message, loggers in messages.iteritems() %}
+***{% for logger, groups in loggers.iteritems() %} {{ logger }}
+<<<<<<<<<<
 {{ message }}
->>>>>>>>>>{% for logger, dates in loggers.iteritems() %}
-{{ logger }}: {{ dates|count }} times{% endfor %}
-
+>>>>>>>>>> 
+    {% for group, dates in groups.iteritems() %}    
+    {{ group }}: {{ dates|count }} times{% endfor %} 
+{%  endfor %}
 {% endfor %}
 
 {% endfor %}
