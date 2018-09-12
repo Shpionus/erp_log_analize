@@ -9,5 +9,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'jinja2',
+        'python-env',
+        'smtplib',
     ]
 )

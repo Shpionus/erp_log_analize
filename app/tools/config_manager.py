@@ -2,6 +2,8 @@ import optparse
 import os
 import datetime
 import logging
+from dotenv import load
+
 
 from config import BASE_DIR
 
@@ -19,17 +21,13 @@ class ConfigManager(object):
             "-s", "--source",
             dest="source",
             help="Files for analise",
-            default=False
+            default=None
         )
         group.add_option(
             "-o", "--output",
             dest="output",
             help="Result file",
-            default=os.path.join(
-                BASE_DIR,
-                'output',
-                'result_{salt}'.format(salt=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-            )
+            default=None
         )
         group.add_option(
             "-f", "--format",
@@ -37,15 +35,41 @@ class ConfigManager(object):
             help="Result's format",
             default="html"
         )
-
         group.add_option(
             "-t", "--types",
             dest="modes",
             help="Type of messages",
             default="ERROR,WARNING"
         )
-
+        group.add_option(
+            "-e", "--env",
+            dest="env",
+            help=".env file",
+            default=os.path.join(BASE_DIR, ".env")
+        )
+        group.add_option(
+            "--history",
+            dest="history",
+            help="Directory to store history",
+            default=os.path.join(BASE_DIR, "history")
+        )
         parser.add_option_group(group)
+
+        # Email setup
+        email_group = optparse.OptionGroup(parser, "Email options")
+        email_group.add_option(
+            "--email",
+            dest="email",
+            help="Send email with report to this address(es)",
+            default=None
+        )
+        email_group.add_option(
+            "--skip-empty",
+            dest="skip_empty",
+            help="Do not send email if not fund target messages",
+            default=False
+        )
+        parser.add_option_group(email_group)
 
         for group in parser.option_groups:
             for option in group.option_list:
@@ -57,31 +81,23 @@ class ConfigManager(object):
             level=logging.DEBUG
         )
 
+    def load_env(self):
+        load(filepath=self.get("env"))
+
     def parse_config(self, args=None):
-        opt, args = self.parser.parse_args(args)
-
-        keys = [
-            "source", "output", "format", "modes"
-        ]
-
-        for arg in keys:
-            if getattr(opt, arg):
-                self.options[arg] = getattr(opt, arg)
-            elif isinstance(self.options[arg], basestring) and self.casts[arg].type in optparse.Option.TYPE_CHECKER:
-                self.options[arg] = optparse.Option.TYPE_CHECKER[self.casts[arg].type](self.casts[arg], arg, self.options[arg])
+        (opt, args) = self.parser.parse_args(args)
+        self.options = opt
 
     def get(self, key, default=None):
-        return self.options.get(key, default)
-
-    def get_misc(self, sect, key, default=None):
-        return self.misc.get(sect, {}).get(key, default)
+        return self.options.ensure_value(key, default)
 
     def __setitem__(self, key, value):
-        self.options[key] = value
+        setattr(self.options, key, value)
 
     def __getitem__(self, key):
-        return self.options[key]
+        return self.get(key)
 
 
 config = ConfigManager()
 config.parse_config()
+config.load_env()

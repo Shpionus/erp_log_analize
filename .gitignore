@@ -1,6 +1,9 @@
 output/*
 logs/*
+history/*
 test/
 build
 dist
 *egg-info
+
+.env

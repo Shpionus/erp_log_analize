@@ -2,3 +2,5 @@
 
 python setup.py install
 python setup.py build
+
+cp ./.env.example ./.env
