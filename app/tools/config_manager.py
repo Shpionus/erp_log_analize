@@ -2,7 +2,7 @@ import optparse
 import os
 import datetime
 import logging
-from dotenv import load
+from dotenv import load_dotenv as load
 from config import BASE_DIR
 
 TM_FILE = os.path.join(BASE_DIR, ".last_run")
@@ -82,7 +82,7 @@ class ConfigManager(object):
         )
 
     def load_env(self):
-        load(filepath=self.get("env"))
+        load(dotenv_path=self.get("env"))
 
     def parse_config(self, args=None):
         (opt, args) = self.parser.parse_args(args)

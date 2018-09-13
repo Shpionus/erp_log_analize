@@ -24,7 +24,7 @@ def run():
 
     if config["email"]:
         if parser.data or not config["skip_empty"] :
-            try: 
+            try:
                 server = EmailServer(
                     getenv("SMTP_SERVER"),
                     getenv("SMTP_PORT"),
@@ -32,14 +32,19 @@ def run():
                     getenv("SMTP_PASSWORD"),
                     getenv("SMTP_TLS", "false").lower() in ["true", "1", "y"],
                 )
-                server.send_email(output, getenv("EMAIL_SUBJECT"), getenv("EMAIL_SENDER"), config["email"], config["format"])
+                server.send_email(
+                    output,
+                    subject=getenv("EMAIL_SUBJECT"),
+                    _to=config["email"],
+                    _type=config["format"]
+                )
                 server.close()
             except Exception as e:
                 logging.error("Can't send email: %s" % e)
 
     logging.debug("Store last run tm: %s" % start_time.strftime(DATE_FORMAT))
     config.store_last_run(start_time)
-        
+
     if config["output"]:
         logging.debug("Store output file. Path: %s" % config["output"])
         with open(config["output"], "w") as f:
@@ -51,4 +56,4 @@ def run():
         with open(path, "w") as f:
             f.write(output)
 
-            
+

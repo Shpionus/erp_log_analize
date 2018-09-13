@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
 
-python setup.py install
-python setup.py build
-
+pip install -r requirements.txt
 cp ./.env.example ./.env

@@ -12,8 +12,8 @@ Clone the project and run setup script
 ./setup.sh
 ```
 
-Then update `.env` file. 
-It contains following settings: 
+Then update `.env` file.
+It contains following settings:
 ```
 # Email server
 SMTP_SERVER="smtp.gmail.com"
@@ -24,13 +24,12 @@ SMTP_TLS=TRUE
 
 # Email message
 EMAIL_SUBJECT="Odoo server logs report (test from local machine)"
-EMAIL_SENDER="no-reply@your_company.com"
 ```
 
 Usage
 -----
 
-There are many different parameters. You can check them all with following command: 
+There are many different parameters. You can check them all with following command:
 ```bash
 $ python run.py -h
 ```
