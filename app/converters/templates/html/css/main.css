@@ -6,6 +6,14 @@ header {
     font-weight: bold;
 }
 
+header > h1,h2,h3 {
+    margin: 0;
+}
+
+header > h3 {
+    font-size: 17px;
+}
+
 h1 {
     font-size: 30px;
     font-weight: bold;

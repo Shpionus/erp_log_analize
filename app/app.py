@@ -1,20 +1,22 @@
 from tools.config_manager import config
-from parser import Parser
-from os import getenv
+from parser import Parser, DATE_FORMAT
+from os import getenv, putenv
 from os.path import join as path_join
 from datetime import datetime
 from tools.email_server import EmailServer
 import logging
 
+KEY_FROM_DATE = "FROM_DATE"
+
 
 def run():
-
     start_time = datetime.now()
-
     parser = Parser(
         config['source'],
         output_format=config['format'],
-        modes=config['modes']
+        modes=config['modes'],
+        create_date=start_time,
+        from_date=config.load_last_run()
     )
 
     parser.parse()
@@ -34,6 +36,9 @@ def run():
                 server.close()
             except Exception as e:
                 logging.error("Can't send email: %s" % e)
+
+    logging.debug("Store last run tm: %s" % start_time.strftime(DATE_FORMAT))
+    config.store_last_run(start_time)
         
     if config["output"]:
         logging.debug("Store output file. Path: %s" % config["output"])

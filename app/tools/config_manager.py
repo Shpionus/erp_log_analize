@@ -3,9 +3,9 @@ import os
 import datetime
 import logging
 from dotenv import load
-
-
 from config import BASE_DIR
+
+TM_FILE = os.path.join(BASE_DIR, ".last_run")
 
 
 class ConfigManager(object):
@@ -88,6 +88,20 @@ class ConfigManager(object):
         (opt, args) = self.parser.parse_args(args)
         self.options = opt
 
+        nullable = [
+            "history",
+            "skip_empty"
+        ]
+
+        for key in nullable:
+            val = self.get(key, None)
+            if val:
+                if val.lower().strip() in ["f", "false", "no", "n", "null", "none"]:
+                    val = None
+            else:
+                val = None
+            setattr(self.options, key, val)
+
     def get(self, key, default=None):
         return self.options.ensure_value(key, default)
 
@@ -97,6 +111,30 @@ class ConfigManager(object):
     def __getitem__(self, key):
         return self.get(key)
 
+    def load_last_run(self):
+        tm = None
+        if not os.path.exists(TM_FILE):
+            return tm
+
+        for line in open(TM_FILE):
+            line = line.strip()
+            # allows for comments in the file
+            if not line:
+                continue
+
+            try:
+                tm = datetime.datetime.utcfromtimestamp(float(line))
+            except Exception as e:
+                logging.error("Can't pars last run. Value `%s`. Error: %s" % (line, e))
+                tm = None
+
+            break
+
+        return tm
+
+    def store_last_run(self, date):
+        with open(TM_FILE, 'w') as file_handle:
+            file_handle.writelines('{0}'.format(date.strftime("%s")))
 
 config = ConfigManager()
 config.parse_config()

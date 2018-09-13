@@ -9,8 +9,10 @@
     </style>
 </head>
 <header>
-    ERP Log Analyser <br/>
-    Generated at {{parser.create_date.strftime('%Y-%m-%d')}}
+    <h1>Odoo Log Analyser</h1>
+    <h3>Created at: {{parser.create_date.strftime('%Y-%m-%d %H:%M:%S')}}</h3>{% if parser.from_date %}
+    <h3>Check from: {{parser.from_date.strftime('%Y-%m-%d %H:%M:%S')}}</h3>{% endif %}
+
 </header>
 <body>
 
