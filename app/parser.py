@@ -21,6 +21,7 @@ class Normalizer(object):
         (re.compile(r'=\d+(\.\d+)?'), '=xxx'),
         (re.compile(r'\b[a-z0-9\.\+_-]+@[a-z0-9\._-]+\.[a-z]*\b\s*', re.I), 'xxx@xxx.xxx '),
         (re.compile(r'\[\d{2}/[a-z]+/\d{4} \d{2}:\d{2}:\d{2}\]', re.I), '[XX/XX/XXXX XX:XX:XX] '),
+        (re.compile(r'\'\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?\'', re.I), '\'XXXX-XX-XX\''),
     ]
 
     def group(self, group):
