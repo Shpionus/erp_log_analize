@@ -30,7 +30,7 @@ def run():
                     getenv("SMTP_PORT"),
                     getenv("SMTP_USER"),
                     getenv("SMTP_PASSWORD"),
-                    getenv("SMTP_TLS", "false").lower() in ["true", "1", "y"],
+                    encoding=getenv("SMTP_ENCODING")
                 )
                 server.send_email(
                     output,
@@ -55,5 +55,3 @@ def run():
         logging.debug("Store file for history. Path: %s" % path)
         with open(path, "w") as f:
             f.write(output)
-
-

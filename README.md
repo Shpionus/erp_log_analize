@@ -20,7 +20,7 @@ SMTP_SERVER="smtp.gmail.com"
 SMTP_PORT="587"
 SMTP_USER="***"
 SMTP_PASSWORD="***"
-SMTP_TLS=TRUE
+SMTP_ENCODING=ssl or tls
 
 # Email message
 EMAIL_SUBJECT="Odoo server logs report (test from local machine)"
