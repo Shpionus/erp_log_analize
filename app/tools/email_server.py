@@ -65,7 +65,7 @@ class EmailServer(object):
     def send_email(self, message, subject=None, _to=None, _type='text'):
         msg = self.build_email(message, subject=subject, _to=_to, _type=_type)
         logging.debug("Sending email to %s ...", msg["To"])
-        self.__server.sendmail(self.__user, msg['To'], msg.as_string())
+        self.__server.sendmail(self.__user, msg['To'].split(", "), msg.as_string())
 
     def close(self):
         self.__server.quit()
